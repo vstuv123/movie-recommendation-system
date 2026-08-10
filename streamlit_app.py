@@ -9,6 +9,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import streamlit as st
+import os
+os.environ["PYTHONUNBUFFERED"] = "1"
+os.environ["HF_HUB_DISABLE_XET"] = "1"
 
 sys.path.append(str(Path(__file__).resolve().parent))
 from src.hybrid import HybridRecommender
