@@ -9,10 +9,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import streamlit as st
-import gdown
 
 sys.path.append(str(Path(__file__).resolve().parent))
-import config
 from src.hybrid import HybridRecommender
 
 st.set_page_config(page_title="Movie Recommender", page_icon="🎬", layout="wide")

@@ -22,17 +22,21 @@ Cold-start handling:
 - New movie (not in the trained embedding index): can't be scored by NCF
   at all, so it can only appear via content-based recommendations
 """
+import shutil
 import sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+from huggingface_hub import hf_hub_download
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 import config
 from src.content_based import ContentRecommender
 from src.collaborative import NeuMF
 
+
+REPO_ID = "vstuv123/movie-ncf-weights"
 
 class HybridRecommender:
     def __init__(self, alpha: float = 0.4):
@@ -56,9 +60,8 @@ class HybridRecommender:
         # Download the heavy 176 MB ratings data file if it's missing
         ratings_file_path = config.DATA_PROCESSED / "ratings_clean.parquet"
         if not ratings_file_path.exists():
-            print("📥 ratings_clean.parquet missing. Downloading from Google Drive...")
-            ratings_file_id = "1mN6vJ7sCjVcHtCsNgA3lAtwhGzIZ6K92"
-            gdown.download(id=ratings_file_id, output=str(ratings_file_path), quiet=False)
+            downloaded = hf_hub_download(repo_id=REPO_ID, filename="ratings_clean.parquet")
+            shutil.copy(downloaded, ratings_file_path)
 
         print("Loading content-based recommender...")
         self.content = ContentRecommender()
@@ -78,14 +81,14 @@ class HybridRecommender:
         # Download PyTorch weights if missing
         if not pt_file_path.exists():
             print("📥 ncf_model.pt missing. Downloading from Google Drive...")
-            pt_file_id = "1H_6LGkRwVJp60GUVxZPTVd-zH8fYNIAD"
-            gdown.download(id=pt_file_id, output=str(pt_file_path), quiet=False)
+            downloaded = hf_hub_download(repo_id=REPO_ID, filename="ncf_model.pt")
+            shutil.copy(downloaded, pt_file_path)
 
         # Download index mapping tracking files if missing
         if not mapping_file_path.exists():
             print("📥 ncf_id_mappings.npz missing. Downloading from Google Drive...")
-            mapping_file_id = "1ofcf6bzo_L2ihCLIL7QCC4C8Mg5JMvOA"
-            gdown.download(id=mapping_file_id, output=str(mapping_file_path), quiet=False)
+            downloaded = hf_hub_download(repo_id=REPO_ID, filename="ncf_id_mappings.npz")
+            shutil.copy(downloaded, mapping_file_path)
 
         # Updated original lines to read from the explicit file paths
         checkpoint = torch.load(pt_file_path, weights_only=False, map_location=self.device)
