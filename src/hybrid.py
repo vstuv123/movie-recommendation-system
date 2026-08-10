@@ -58,8 +58,7 @@ class HybridRecommender:
         if not ratings_file_path.exists():
             print("📥 ratings_clean.parquet missing. Downloading from Google Drive...")
             ratings_file_id = "1mN6vJ7sCjVcHtCsNgA3lAtwhGzIZ6K92"
-            ratings_url = f'https://google.com{ratings_file_id}'
-            gdown.download(ratings_url, str(ratings_file_path), quiet=False)
+            gdown.download(id=ratings_file_id, output=str(ratings_file_path), quiet=False)
 
         print("Loading content-based recommender...")
         self.content = ContentRecommender()
@@ -80,15 +79,13 @@ class HybridRecommender:
         if not pt_file_path.exists():
             print("📥 ncf_model.pt missing. Downloading from Google Drive...")
             pt_file_id = "1H_6LGkRwVJp60GUVxZPTVd-zH8fYNIAD"
-            pt_url = f'https://google.com{pt_file_id}'
-            gdown.download(pt_url, str(pt_file_path), quiet=False)
+            gdown.download(id=pt_file_id, output=str(pt_file_path), quiet=False)
 
         # Download index mapping tracking files if missing
         if not mapping_file_path.exists():
             print("📥 ncf_id_mappings.npz missing. Downloading from Google Drive...")
             mapping_file_id = "1ofcf6bzo_L2ihCLIL7QCC4C8Mg5JMvOA"
-            map_url = f'https://google.com{mapping_file_id}'
-            gdown.download(map_url, str(mapping_file_path), quiet=False)
+            gdown.download(id=mapping_file_id, output=str(mapping_file_path), quiet=False)
 
         # Updated original lines to read from the explicit file paths
         checkpoint = torch.load(pt_file_path, weights_only=False, map_location=self.device)
